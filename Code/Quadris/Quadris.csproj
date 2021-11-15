@@ -154,5 +154,26 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\cell_blue_shape.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\bg_music_2.wav" />
+    <Content Include="Data\Bitmap1.bmp" />
+    <Content Include="Data\cell_cyan_shape.png" />
+    <None Include="Data\cell_dark_shape.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Content Include="Data\cell_fire_shape.png" />
+    <Content Include="Data\cell_green_shape.png" />
+    <Content Include="Data\cell_ground_shape.png" />
+    <Content Include="Data\cell_ice_shape.png" />
+    <Content Include="Data\cell_magenta_shape.png" />
+    <Content Include="Data\cell_orange_shape.png" />
+    <Content Include="Data\cell_purple_shape.png" />
+    <Content Include="Data\cell_red_shape.png" />
+    <Content Include="Data\cell_white_shape.png" />
+    <Content Include="Data\cell_yellow_shape.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

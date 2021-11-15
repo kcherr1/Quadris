@@ -4,6 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
+
+
+
+
+
 namespace Quadris {
   static class Program {
     /// <summary>
