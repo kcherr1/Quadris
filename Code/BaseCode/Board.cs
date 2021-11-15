@@ -1,7 +1,4 @@
 ﻿#pragma warning disable 1591
-using System;
-using System.Collections.Generic;
-
 namespace Quadris {
   public enum CellState {
     EMPTY,
@@ -13,8 +10,7 @@ namespace Quadris {
   public enum MoveDir {
     LEFT,
     RIGHT,
-    DOWN,
-    UP // Jacoby - Added enum to help hold piece in place with up button
+    DOWN
   }
 
   public class GridCellInfo {
@@ -37,16 +33,8 @@ namespace Quadris {
   }
 
   public class Board {
-
-   public GridCellInfo[,] Grid { get; private set; }
+    public GridCellInfo[,] Grid { get; private set; }
     public Piece ActivePiece { get; set; }
-
-        // Jacoby: Added variable to check if piece is moveable.
-        public List<Piece> Pieces = new List<Piece>();  //List of current and next piece...
-        public int Score = 0;                           //Score
-        public bool hold_lock = false;                  //Delays swap after one is made 
-        public bool Piece_settled;                      //Checks to see if piece is settled
-        public bool moveable = true;                    //Variable to control moveability of piece
 
     public Board() {
       Grid = new GridCellInfo[24, 10];
@@ -60,11 +48,9 @@ namespace Quadris {
     /// <summary>
     /// This method updates the grid and moves the active piece down
     /// </summary>
-    /// Jacoby: Hold piece - checks to see if the piece is moveable before moving, up button changes moveable to false.
     public void Update() {
       if (ActivePieceCanMove(MoveDir.DOWN)) {
-        if(moveable)
-            ActivePiece.MoveDown();
+        ActivePiece.MoveDown();
         RefreshGridWithActivePiece();
       }
       else {
@@ -119,13 +105,6 @@ namespace Quadris {
       }
     }
 
-    public void HoldActivePiece() {
-      if (ActivePieceCanMove(MoveDir.RIGHT)) {
-        ActivePiece.MoveRight();
-        RefreshGridWithActivePiece();
-      }
-    }
-
     public void RotateActivePieceRight() {
       ActivePiece.RotateRight();
       if (CheckForOutOfBounds()) {
@@ -144,32 +123,24 @@ namespace Quadris {
       bool canMove = true;
       switch (moveDir) {
         case MoveDir.DOWN:
-                    {
+          for (int c = 0; c < ActivePiece.Layout.GetLength(1); c++) {
+            int lastRow = -1;
+            for (int r = 0; r < ActivePiece.Layout.GetLength(0); r++) {
+              if (ActivePiece.Layout[r, c]) {
+                lastRow = r;
+              }
+            }
+            if (lastRow == -1) {
+              continue;
+            }
+            GridCellInfo cellInfo = GetCellInfo(ActivePiece.GridRow + lastRow + 1, ActivePiece.GridCol + c);
+            if (cellInfo == null || cellInfo.State == CellState.OCCUPIED_PREVIOUSLY) {
+              canMove = false;
+              break;
+            }
+          }
+          break;
 
-                        for (int c = 0; c < ActivePiece.Layout.GetLength(1); c++)
-                        {
-                            int lastRow = -1;
-                            for (int r = 0; r < ActivePiece.Layout.GetLength(0); r++)
-                            {
-                                if (ActivePiece.Layout[r, c])
-                                {
-                                    lastRow = r;
-                                }
-                            }
-                            if (lastRow == -1)
-                            {
-                                continue;
-                            }
-                            GridCellInfo cellInfo = GetCellInfo(ActivePiece.GridRow + lastRow + 1, ActivePiece.GridCol + c);
-                            if (cellInfo == null || cellInfo.State == CellState.OCCUPIED_PREVIOUSLY)
-                            {
-                                canMove = false;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-          
         case MoveDir.LEFT:
           for (int r = 0; r < ActivePiece.Layout.GetLength(0); r++) {
             int firstCol = -1;
@@ -208,13 +179,6 @@ namespace Quadris {
             }
           }
           break;
-
-        case MoveDir.UP:
-                    { 
-            canMove = false;
-            break;
-                        }
-                    break;
       }
       return canMove;
     }
@@ -241,16 +205,10 @@ namespace Quadris {
             cellInfo.State = CellState.OCCUPIED_PREVIOUSLY;
           }
         }
-      } 
-            // Piece is settled and active piece is set to the next piece. The next piece is a randomly generated piece.  Any hold lock is released.
-            ActivePiece = Pieces[1];
-            Pieces[0] = ActivePiece;
-            Pieces[1] = Piece.GetRandPiece();
-            hold_lock = false;
-            Piece_settled = true;
-        }
+      }
+      ActivePiece = Piece.GetRandPiece();
+    }
 
-    // Jacoby: Score: 1 Q8: (Garrett Gresham) As a gamer I want to see the number of lines cleared in my game so I can have a tangential score.
     public void CheckForLine() {
       for (int curRow = 0; curRow < Grid.GetLength(0); curRow++) {
         bool allFilled = true;
@@ -266,9 +224,7 @@ namespace Quadris {
               Grid[dropRow, col] = Grid[dropRow - 1, col];
             }
           }
-                    // Q8 Increments the score when a line is filled
-                    Score++;
-                    curRow--;
+          curRow--;
         }
       }
     }
